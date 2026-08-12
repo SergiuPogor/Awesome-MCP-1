@@ -1,64 +1,166 @@
-# Awesome-MCP
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Albertchamberlain/Awesome-MCP/main/assets/logo-dark.svg">
+    <img alt="Awesome MCP" src="https://raw.githubusercontent.com/Albertchamberlain/Awesome-MCP/main/assets/logo.svg" width="128">
+  </picture>
+</p>
 
-![Awesome](https://cdn.jsdelivr.net/gh/sindresorhus/awesome@main/media/badge.svg)
+<h1 align="center">Awesome MCP</h1>
 
-A **maintainable** curated list of Model Context Protocol (MCP) servers, clients, registries, and SDKs.
+<p align="center">
+  <strong>The MCP catalog your agents can search.</strong>
+</p>
 
-Unlike a hand-edited markdown wall, this repo stores entries in [`data/catalog.yaml`](data/catalog.yaml) and ships tooling to **search**, **validate**, and **serve** the catalog as an MCP meta-server.
+<p align="center">
+  Curated for humans. Structured in YAML. Searchable through MCP.
+</p>
 
-- **27** curated entries
-- **13** servers · **6** clients · **4** registries · **4** SDKs/tools
-- **16** official / reference projects
-- Catalog updated: `2026-06-18`
+<p align="center">
+  <a href="https://github.com/Albertchamberlain/Awesome-MCP"><img alt="Awesome" src="https://cdn.jsdelivr.net/gh/sindresorhus/awesome@main/media/badge.svg"></a>
+
+  <a href="https://pypi.org/project/awesome-mcp/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-4c1?logo=open-source-initiative&logoColor=white"></a>
+  <img alt="Catalog" src="https://img.shields.io/badge/catalog-27%20entries-7c3aed">
+  <img alt="Updated" src="https://img.shields.io/badge/updated-2026--06--18-059669">
+</p>
+
+<br>
+
+<p align="center">
+  <a href="#catalog"><b>Catalog</b></a> &ensp;·&ensp;
+  <a href="#connect-to-your-agent"><b>Connect an Agent</b></a> &ensp;·&ensp;
+  <a href="#cli"><b>CLI</b></a> &ensp;·&ensp;
+  <a href="#contributing"><b>Contributing</b></a>
+</p>
+
+<br>
+
+---
+
+## The Problem
+
+Most awesome lists are **Markdown walls** — hand-edited, hard to validate, and invisible to AI agents.
+
+They look readable to humans, but every edit risks broken links, inconsistent formatting, and drift between the data and its presentation. And when your agent needs to *discover* the right MCP tool, it has to parse a wall of unstructured text.
+
+## What's Different Here
+
+Awesome MCP keeps the entire MCP ecosystem in **one validated YAML catalog**, then turns it into everything you can see, query, and connect to:
+
+<div align="center">
+
+```
+                      catalog.yaml
+                           │
+          ┌────────────────┼────────────────┐
+          ▼                ▼                 ▼
+      README.md         CLI tools        MCP server
+   (human-browsable)  (searchable)   (agent-searchable)
+```
+
+</div>
+
+> **Edit one record. Regenerate the docs. Re-query from anywhere.**
+
+- **Humans** browse a clean, categorized list of servers, clients, registries, and SDKs.
+- **CLI users** run `awesome-mcp search playwright` and get structured results.
+- **AI agents** call `search_catalog` through MCP and discover tools natively.
+
+---
+
+## See It in Action
+
+The meta-server is what makes this project unique. A human or an agent asks a question — and the catalog answers:
+
+```text
+User (or Agent):
+  "Find an official MCP server for read-only PostgreSQL access."
+
+Agent calls:
+  search_catalog({
+    "query": "PostgreSQL",
+    "kind": "server",
+    "limit": 3
+  })
+
+Awesome-MCP responds:
+  ┌──────────────────────────────────────────────────────────────┐
+  │ PostgreSQL Server                              ✅ official   │
+  │ Read-only PostgreSQL access with schema introspection.       │
+  │ Transport: stdio  ·  Tags: sql, postgres                    │
+  └──────────────────────────────────────────────────────────────┘
+```
+
+*This is what separates Awesome MCP from every other awesome list. **The catalog speaks MCP.** *
+
+---
 
 ## Quick Start
 
+### Connect to Your Agent
+
+Add Awesome MCP to any MCP client so your agent can discover tools:
+
 ```bash
-git clone https://github.com/Albertchamberlain/Awesome-MCP.git
-cd Awesome-MCP
-pip install -e .
-
-# CLI
-awesome-mcp stats
-awesome-mcp list --kind server
-awesome-mcp search playwright
-
-# Regenerate README from catalog.yaml
-awesome-mcp readme
-
-# Run the meta MCP server (search this catalog from any MCP client)
-awesome-mcp-server
+# Install globally (recommended)
+pipx install awesome-mcp
 ```
-
-## MCP Meta-Server
-
-This repo includes a small MCP server that exposes the catalog to agents:
-
-| Tool | Description |
-|------|-------------|
-| `search_catalog` | Full-text search across names, tags, and descriptions |
-| `list_catalog` | List entries filtered by kind (`server`, `client`, …) |
-| `get_catalog_entry` | Fetch one entry by stable `id` |
-| `catalog_stats` | Summary counts |
-
-**Cursor / Claude Desktop config example:**
 
 ```json
 {
   "mcpServers": {
     "awesome-mcp": {
-      "command": "awesome-mcp-server",
-      "args": []
+      "command": "awesome-mcp-server"
     }
   }
 }
 ```
 
-## Contents
+Supports **Claude Desktop**, **Cursor**, **Cline**, **Continue**, and any MCP-compatible client.
+
+Once connected, your agent can call these tools:
+
+| Tool | What it does |
+|---|---|
+| `search_catalog` | Full-text search across names, tags, and descriptions |
+| `list_catalog` | List entries filtered by kind (`server`, `client`, …) |
+| `get_catalog_entry` | Fetch one entry by stable `id` |
+| `catalog_stats` | Summary counts |
+
+### CLI
+
+```bash
+# Get an overview
+$ awesome-mcp stats
+
+# List every server
+$ awesome-mcp list --kind server
+
+# Search for a specific tool
+$ awesome-mcp search playwright
+
+  Playwright MCP (playwright-mcp) — server
+    Browser automation via Playwright
+    Transport: stdio  ·  Tags: browser, automation, microsoft
+
+# Regenerate the catalog sections of this README
+$ awesome-mcp readme
+```
+
+---
+
+## Catalog
+
+> **27 curated entries** · 13 servers · 6 clients · 4 registries · 4 SDKs/tools · 16 official/reference
+> *Deliberately curated — not an exhaustive index.*
+
+Legend: ✅ = Official / reference project · Transport: `stdio`/`sse`/`remote`
+
+<!-- CATALOG:SERVERS:START -->
 
 ## 🛠️ MCP Servers
 
-### Ai
+### AI
 
 - [Memory Server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) ✅ `stdio` — Persistent knowledge-graph memory across conversations. — `memory`, `graph`
 - [Sequential Thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking) ✅ `stdio` — Structured step-by-step reasoning tool for complex problems. — `reasoning`, `planning`
@@ -80,7 +182,7 @@ This repo includes a small MCP server that exposes the catalog to agents:
 ### Developer Tools
 
 - [Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) ✅ `stdio` — Secure local file read/write with configurable directory allowlists. — `files`, `local`
-- [GitHub MCP Server](https://github.com/github/github-mcp-server) ✅ `stdio, remote` — Official GitHub integration for repos, issues, PRs, and Actions. — `github`, `git`
+- [GitHub MCP Server](https://github.com/github/github-mcp-server) ✅ `stdio`, `remote` — Official GitHub integration for repos, issues, PRs, and Actions. — `github`, `git`
 - [Official MCP Reference Servers](https://github.com/modelcontextprotocol/servers) ✅ `stdio` — Reference implementations maintained by the MCP steering group (filesystem, memory, fetch, git, and more). — `reference`, `anthropic`
 
 ### Productivity
@@ -92,22 +194,30 @@ This repo includes a small MCP server that exposes the catalog to agents:
 - [Brave Search MCP](https://github.com/brave/brave-search-mcp-server) `stdio` — Web search via Brave Search API. — `search`, `api`
 - [Fetch Server](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) ✅ `stdio` — Fetch and convert web pages to markdown for LLM consumption. — `http`, `scraping`
 
+<!-- CATALOG:SERVERS:END -->
+
+<!-- CATALOG:CLIENTS:START -->
+
 ## 🖥️ MCP Clients
 
 ### Desktop
 
-- [Cherry Studio](https://github.com/CherryHQ/cherry-studio) `stdio, sse` — Multi-model desktop client with visual MCP server management. — `desktop`, `multi-model`
+- [Cherry Studio](https://github.com/CherryHQ/cherry-studio) `stdio`, `sse` — Multi-model desktop client with visual MCP server management. — `desktop`, `multi-model`
 - [Claude Desktop](https://claude.ai/download) ✅ `stdio` — Anthropic desktop app with native MCP connector support. — `anthropic`, `desktop`
 
-### Ide
+### IDE
 
 - [Cline](https://github.com/cline/cline) `stdio` — VS Code extension agent with MCP server marketplace integration. — `vscode`, `agent`
 - [Continue](https://github.com/continuedev/continue) `stdio` — Open-source AI code assistant for VS Code and JetBrains with MCP support. — `vscode`, `open-source`
-- [Cursor](https://cursor.com) `stdio, sse` — AI-native IDE with first-class MCP server configuration in settings. — `ide`, `coding`
+- [Cursor](https://cursor.com) `stdio`, `sse` — AI-native IDE with first-class MCP server configuration in settings. — `ide`, `coding`
 
 ### Web
 
-- [LibreChat](https://github.com/danny-avila/LibreChat) `stdio, sse` — Self-hosted ChatGPT-style UI with MCP plugin support. — `self-hosted`, `web`
+- [LibreChat](https://github.com/danny-avila/LibreChat) `stdio`, `sse` — Self-hosted ChatGPT-style UI with MCP plugin support. — `self-hosted`, `web`
+
+<!-- CATALOG:CLIENTS:END -->
+
+<!-- CATALOG:REGISTRIES:START -->
 
 ## 📚 Registries & Directories
 
@@ -118,35 +228,82 @@ This repo includes a small MCP server that exposes the catalog to agents:
 - [MCP.so](https://mcp.so) `remote` — Community-driven searchable directory of MCP servers. — `directory`, `community`
 - [Smithery](https://smithery.ai) `remote` — Curated MCP registry with one-click install flows for popular clients. — `directory`, `install`
 
+<!-- CATALOG:REGISTRIES:END -->
+
+<!-- CATALOG:SDKS:START -->
+
 ## 🧰 SDKs & Frameworks
 
-### Sdk
+### SDK
 
-- [FastMCP](https://github.com/jlowin/fastmcp) `stdio, sse` — High-level Python framework for building MCP servers with decorators. — `python`, `fastapi-style`
-- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) ✅ `stdio, sse` — Official Python SDK for building MCP servers and clients. — `python`, `sdk`
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) ✅ `stdio, sse` — Official TypeScript SDK for MCP server and client development. — `typescript`, `sdk`
+- [FastMCP](https://github.com/jlowin/fastmcp) `stdio`, `sse` — High-level Python framework for building MCP servers with decorators. — `python`, `fastapi-style`
+- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) ✅ `stdio`, `sse` — Official Python SDK for building MCP servers and clients. — `python`, `sdk`
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) ✅ `stdio`, `sse` — Official TypeScript SDK for MCP server and client development. — `typescript`, `sdk`
 
 ### Tooling
 
 - [MCP Inspector](https://github.com/modelcontextprotocol/inspector) ✅ `stdio` — Visual debugging tool for testing MCP servers during development. — `debug`, `devtools`
 
+<!-- CATALOG:SDKS:END -->
+
+---
+
+## Data Model
+
+Every entry in the catalog is a validated YAML record. No raw Markdown, no drift:
+
+```yaml
+- id: postgres-server
+  name: PostgreSQL Server
+  kind: server
+  category: database
+  url: https://github.com/modelcontextprotocol/servers/tree/main/src/postgres
+  description: Read-only PostgreSQL access with schema introspection.
+  transport: [stdio]
+  official: true
+  tags: [sql, postgres]
+```
+
+> **One record. One source of truth.** Every change is validated, and the README is regenerated from it.
+
+---
+
 ## Contributing
 
-Add or edit entries in [`data/catalog.yaml`](data/catalog.yaml), then run:
+Add or edit entries in [`data/catalog.yaml`](data/catalog.yaml), then:
 
 ```bash
+# Validate the catalog
+awesome-mcp validate
+
+# Regenerate the README
 awesome-mcp readme
+
+# Run the test suite
 pytest
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the entry schema and review checklist.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the entry schema, curation policy, and review checklist.
+
+### Curation Philosophy
+
+- **Curated**, not comprehensive — every entry earns its place.
+- **Official** projects get the ✅ flag, community projects don't.
+- **Stable IDs** mean links never break between catalog updates.
+- Entries link to upstream projects under their respective licenses.
+
+---
 
 ## Related Lists
 
 - [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) — official reference servers
 - [punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers) — large community list
-- [MCP Registry](https://registry.modelcontextprotocol.io) — official registry
+- [MCP Registry](https://registry.modelcontextprotocol.io) — official MCP registry
 
-## License
+---
 
-MIT — see [LICENSE](LICENSE). Catalog descriptions link to upstream projects under their respective licenses.
+<br>
+
+<p align="center">
+  <sub>MIT — see <a href="LICENSE">LICENSE</a>. Catalog descriptions link to upstream projects under their respective licenses.</sub>
+</p>
